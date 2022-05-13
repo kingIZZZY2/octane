@@ -8,7 +8,7 @@ use Laravel\Octane\Contracts\DispatchesTasks;
 use Laravel\Octane\Exceptions\TaskExceptionResult;
 use Laravel\Octane\Exceptions\TaskTimeoutException;
 use Laravel\SerializableClosure\SerializableClosure;
-use Swoole\Http\Server;
+use Swoole\WebSocket\Server;
 
 class SwooleTaskDispatcher implements DispatchesTasks
 {

@@ -8,7 +8,7 @@ use Laravel\Octane\Swoole\SwooleClient;
 use Laravel\Octane\Swoole\SwooleExtension;
 use Laravel\Octane\Swoole\WorkerState;
 use Laravel\Octane\Worker;
-use Swoole\Http\Server;
+use Swoole\WebSocket\Server;
 use Throwable;
 
 class OnWorkerStart
@@ -25,7 +25,7 @@ class OnWorkerStart
     /**
      * Handle the "workerstart" Swoole event.
      *
-     * @param  \Swoole\Http\Server  $server
+     * @param  \Swoole\WebSocket\Server  $server
      * @param  int  $workerId
      * @return void
      */
@@ -53,7 +53,7 @@ class OnWorkerStart
     /**
      * Boot the Octane worker and application.
      *
-     * @param  \Swoole\Http\Server  $server
+     * @param  \Swoole\WebSocket\Server  $server
      * @return \Laravel\Octane\Worker
      */
     protected function bootWorker($server)
@@ -77,7 +77,7 @@ class OnWorkerStart
     /**
      * Start the Octane server tick to dispatch the tick task every second.
      *
-     * @param  \Swoole\Http\Server  $server
+     * @param  \Swoole\WebSocket\Server  $server
      * @return void
      */
     protected function dispatchServerTickTaskEverySecond($server)
@@ -93,7 +93,7 @@ class OnWorkerStart
     /**
      * Register the request handled listener that will output request information per request.
      *
-     * @param  \Swoole\Http\Server  $server
+     * @param  \Swoole\WebSocket\Server  $server
      * @return void
      */
     protected function streamRequestsToConsole($server)

@@ -16,8 +16,12 @@ use Laravel\Octane\Events\TickTerminated;
 use Laravel\Octane\Events\WorkerErrorOccurred;
 use Laravel\Octane\Events\WorkerStarting;
 use Laravel\Octane\Events\WorkerStopping;
+use Laravel\Octane\Events\WebSocketMessage;
+use Laravel\Octane\Events\WebSocketDisconnect;
 use Laravel\Octane\Exceptions\TaskExceptionResult;
 use Laravel\Octane\Swoole\TaskResult;
+use Swoole\WebSocket\Frame;
+use Swoole\WebSocket\Server;
 use RuntimeException;
 use Throwable;
 
@@ -261,5 +265,15 @@ class Worker implements WorkerContract
     public function terminate(): void
     {
         $this->dispatchEvent($this->app, new WorkerStopping($this->app));
+    }
+
+    public function handleWebSocketMessage(Server $server, Frame $frame)
+    {
+        $this->dispatchEvent($this->app, new WebSocketMessage($this->app, $server, $frame));
+    }
+
+    public function handleWebSocketDisconnect(Server $server, int $fd)
+    {
+        $this->dispatchEvent($this->app, new WebSocketDisconnect($this->app, $server, $fd));
     }
 }
