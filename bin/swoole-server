@@ -14,6 +14,11 @@ use Swoole\Timer;
 
 ini_set('display_errors', 'stderr');
 
+
+if ($serverState['octaneConfig']['swoole']['options']['enable_coroutine'] && $serverState['octaneConfig']['swoole']['coroutine_hooks']) {
+    \Swoole\Runtime::enableCoroutine(true, $serverState['octaneConfig']['swoole']['coroutine_hooks']);
+}
+
 require_once __DIR__.'/../src/Stream.php';
 
 $bootstrap = fn ($serverState) => require __DIR__.'/bootstrap.php';
@@ -35,8 +40,8 @@ $serverState = json_decode(file_get_contents(
 
 
 $server = require __DIR__.'/createSwooleServer.php';
-$waitgroup = new \Swoole\Coroutine\WaitGroup();
-$server->waitgroup = &$waitgroup;
+// $waitgroup = new \Swoole\Coroutine\WaitGroup();
+// $server->waitgroup = &$waitgroup;
 
 $timerTable = require __DIR__.'/createSwooleTimerTable.php';
 
@@ -104,7 +109,7 @@ $server->on('workerstart', fn (Server $server, $workerId) =>
 |
 */
 
-$server->on('request', function ($request, $response) use (&$waitgroup, $workerState, $serverState) {
+$server->on('request', function ($request, $response) use ($workerState, $serverState) {    // &$waitgroup, 
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -120,7 +125,7 @@ $server->on('request', function ($request, $response) use (&$waitgroup, $workerS
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'waitgroup' => &$waitgroup
+        // 'waitgroup' => &$waitgroup
     ])));
 
     if ($workerState->timerTable) {
@@ -137,7 +142,7 @@ $server->on('request', function ($request, $response) use (&$waitgroup, $workerS
 |
 */
 
-$server->on('handshake', function ($request, $response) use (&$waitgroup, $workerState, $serverState) {
+$server->on('handshake', function ($request, $response) use ($workerState, $serverState) {  // &$waitgroup, 
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -153,7 +158,7 @@ $server->on('handshake', function ($request, $response) use (&$waitgroup, $worke
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'waitgroup' => &$waitgroup
+        // 'waitgroup' => &$waitgroup
     ])));
 
     if ($workerState->timerTable) {

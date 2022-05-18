@@ -88,8 +88,8 @@ class Worker implements WorkerContract
 
         $gateway = new ApplicationGateway($this->app, $sandbox);
 
-        $waitgroup = &$context->waitgroup; // necessary?
-        $request->attributes->set('waitgroup', $waitgroup);
+        // $waitgroup = &$context->waitgroup; // necessary?
+        // $request->attributes->set('waitgroup', $waitgroup);
 
         try {
             $responded = false;
