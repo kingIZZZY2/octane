@@ -88,7 +88,8 @@ class Worker implements WorkerContract
 
         $gateway = new ApplicationGateway($this->app, $sandbox);
 
-        $request->attributes->set('server', $context->server);
+        $server = &$context->server; // necessary?
+        $request->attributes->set('server', $server);
 
         try {
             $responded = false;

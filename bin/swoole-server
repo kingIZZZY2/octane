@@ -35,7 +35,8 @@ $serverState = json_decode(file_get_contents(
 
 
 $server = require __DIR__.'/createSwooleServer.php';
-$server->waitgroups = [];
+$waitgroups = [];
+$server->waitgroups = &$waitgroups;
 
 $timerTable = require __DIR__.'/createSwooleTimerTable.php';
 
@@ -119,7 +120,7 @@ $server->on('request', function ($request, $response) use ($server, $workerState
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'server' => $server
+        'server' => &$server
     ])));
 
     if ($workerState->timerTable) {
@@ -152,7 +153,7 @@ $server->on('handshake', function ($request, $response) use ($server, $workerSta
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'server' => $server
+        'server' => &$server
     ])));
 
     if ($workerState->timerTable) {
