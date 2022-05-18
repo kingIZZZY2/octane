@@ -104,7 +104,7 @@ $server->on('workerstart', fn (Server $server, $workerId) =>
 |
 */
 
-$server->on('request', function ($request, $response) use (&$server, $workerState, $serverState) {
+$server->on('request', function ($request, $response) use (&$waitgroup, $workerState, $serverState) {
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -120,7 +120,7 @@ $server->on('request', function ($request, $response) use (&$server, $workerStat
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'server' => &$server
+        'waitgroup' => &$waitgroup
     ])));
 
     if ($workerState->timerTable) {
@@ -137,7 +137,7 @@ $server->on('request', function ($request, $response) use (&$server, $workerStat
 |
 */
 
-$server->on('handshake', function ($request, $response) use (&$server, $workerState, $serverState) {
+$server->on('handshake', function ($request, $response) use (&$waitgroup, $workerState, $serverState) {
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -153,7 +153,7 @@ $server->on('handshake', function ($request, $response) use (&$server, $workerSt
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        'server' => &$server
+        'waitgroup' => &$waitgroup
     ])));
 
     if ($workerState->timerTable) {
