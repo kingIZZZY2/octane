@@ -35,8 +35,8 @@ $serverState = json_decode(file_get_contents(
 
 
 $server = require __DIR__.'/createSwooleServer.php';
-$waitgroups = [];
-$server->waitgroups = &$waitgroups;
+$waitgroup = new \Swoole\Coroutine\WaitGroup();
+$server->waitgroup = &$waitgroup;
 
 $timerTable = require __DIR__.'/createSwooleTimerTable.php';
 
