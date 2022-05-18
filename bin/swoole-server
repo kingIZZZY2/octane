@@ -14,11 +14,6 @@ use Swoole\Timer;
 
 ini_set('display_errors', 'stderr');
 
-
-if ($serverState['octaneConfig']['swoole']['options']['enable_coroutine'] && $serverState['octaneConfig']['swoole']['coroutine_hooks']) {
-    \Swoole\Runtime::enableCoroutine(true, $serverState['octaneConfig']['swoole']['coroutine_hooks']);
-}
-
 require_once __DIR__.'/../src/Stream.php';
 
 $bootstrap = fn ($serverState) => require __DIR__.'/bootstrap.php';
@@ -38,6 +33,9 @@ $serverState = json_decode(file_get_contents(
     $serverStateFile = $_SERVER['argv'][1]
 ), true)['state'];
 
+if ($serverState['octaneConfig']['swoole']['options']['enable_coroutine'] && $serverState['octaneConfig']['swoole']['coroutine_hooks']) {
+    \Swoole\Runtime::enableCoroutine(true, $serverState['octaneConfig']['swoole']['coroutine_hooks']);
+}
 
 $server = require __DIR__.'/createSwooleServer.php';
 // $waitgroup = new \Swoole\Coroutine\WaitGroup();
