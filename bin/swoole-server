@@ -33,9 +33,11 @@ $serverState = json_decode(file_get_contents(
     $serverStateFile = $_SERVER['argv'][1]
 ), true)['state'];
 
-if ($serverState['octaneConfig']['swoole']['enable_coroutine'] && $serverState['octaneConfig']['swoole']['coroutine_hooks']) {
+if ($serverState['octaneConfig']['swoole']['options']['enable_coroutine'] && $serverState['octaneConfig']['swoole']['options']['coroutine_hooks']) {
     \Swoole\Runtime::enableCoroutine(true, $serverState['octaneConfig']['swoole']['coroutine_hooks']);
 }
+global $waitgroups;
+$waitgroups = [];
 
 $server = require __DIR__.'/createSwooleServer.php';
 
