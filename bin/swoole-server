@@ -40,6 +40,8 @@ if ($serverState['octaneConfig']['swoole']['options']['enable_coroutine'] && $se
 $server = require __DIR__.'/createSwooleServer.php';
 // $waitgroup = new \Swoole\Coroutine\WaitGroup();
 // $server->waitgroup = &$waitgroup;
+$data = [];
+$server->data = &$data;
 
 $timerTable = require __DIR__.'/createSwooleTimerTable.php';
 
@@ -107,7 +109,7 @@ $server->on('workerstart', fn (Server $server, $workerId) =>
 |
 */
 
-$server->on('request', function ($request, $response) use ($workerState, $serverState) {    // &$waitgroup, 
+$server->on('request', function ($request, $response) use (&$server, $workerState, $serverState) {    // &$waitgroup, 
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -123,7 +125,8 @@ $server->on('request', function ($request, $response) use ($workerState, $server
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        // 'waitgroup' => &$waitgroup
+        // 'waitgroup' => &$waitgroup,
+        'server' => &$server
     ])));
 
     if ($workerState->timerTable) {
@@ -140,7 +143,7 @@ $server->on('request', function ($request, $response) use ($workerState, $server
 |
 */
 
-$server->on('handshake', function ($request, $response) use ($workerState, $serverState) {  // &$waitgroup, 
+$server->on('handshake', function ($request, $response) use (&$server, $workerState, $serverState) {  // &$waitgroup, 
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -156,7 +159,8 @@ $server->on('handshake', function ($request, $response) use ($workerState, $serv
         'swooleResponse' => $response,
         'publicPath' => $serverState['publicPath'],
         'octaneConfig' => $serverState['octaneConfig'],
-        // 'waitgroup' => &$waitgroup
+        // 'waitgroup' => &$waitgroup,
+        'server' => &$server
     ])));
 
     if ($workerState->timerTable) {
