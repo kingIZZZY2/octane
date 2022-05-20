@@ -92,11 +92,21 @@ $workerState->cacheTable = require __DIR__.'/createSwooleCacheTable.php';
 $workerState->timerTable = $timerTable;
 $workerState->tables = require __DIR__.'/createSwooleTables.php';
 
-$server->on('workerstart', fn (Server $server, $workerId) =>
-    (fn ($basePath) => (new OnWorkerStart(
+$server->on('workerstart', function (Server $server, $workerId) use ($workerState, $serverState, $bootstrap ) {
+
+    error_log("WorkerStart setting:{$server->setting['worker_num']} ".json_encode([
+        'workerstart' => 'workerstart',
+        'pid' => posix_getpid(),
+        'worker_id' => $server->worker_id,
+        'workerId' => $workerId,
+        'getWorkerPid' => $server->getWorkerPid(),
+        'getWorkerPid(worker_id)' => $server->getWorkerPid($server->worker_id)
+    ]));
+
+    return (fn ($basePath) => (new OnWorkerStart(
         new SwooleExtension, $basePath, $serverState, $workerState
-    ))($server, $workerId))($bootstrap($serverState))
-);
+    ))($server, $workerId))($bootstrap($serverState));
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +120,17 @@ $server->on('workerstart', fn (Server $server, $workerId) =>
 */
 
 $server->on('request', function ($request, $response) use (&$server, $workerState, $serverState) {    // &$waitgroup, 
+
+    error_log(json_encode([
+        'request' => 'request',
+        'cid' => Swoole\Coroutine::getCid(),
+        'fd' => $request->fd,
+        'pid' => posix_getpid(),
+        'worker_id' => $server->worker_id,
+        'getWorkerPid' => $server->getWorkerPid(),
+        'getWorkerPid(worker_id)' => $server->getWorkerPid($server->worker_id)
+    ]));
+
     $workerState->lastRequestTime = microtime(true);
 
     if ($workerState->timerTable) {
@@ -181,6 +202,17 @@ $server->on('handshake', function ($request, $response) use (&$server, $workerSt
 */
 
 $server->on('message', function (Server $server, Frame $frame) use ($workerState) {
+    error_log(json_encode([
+        'message' => 'message',
+        'cid' => Swoole\Coroutine::getCid(),
+        'fd' => $frame->fd,
+        'pid' => posix_getpid(),
+        'worker_id' => $server->worker_id,
+        'getWorkerPid' => $server->getWorkerPid(),
+        'getWorkerPid(worker_id)' => $server->getWorkerPid($server->worker_id),
+        'frame' => $frame
+    ]));
+
     $workerState->worker->handleWebSocketMessage($server, $frame);
 });
 
